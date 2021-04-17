@@ -36,7 +36,7 @@ def method():
     return {"method": "OPTIONS"}
 
 
-@app.get("/auth}")
+@app.get("/auth")
 def auth(password, password_hash, response: Response):
     hash_password = sha256(password.encode()).hexdigest()
     if password != '' and hash_password == password_hash:
