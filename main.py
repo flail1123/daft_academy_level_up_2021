@@ -66,14 +66,14 @@ def register(name_surname: NameSurname, response: Response):
     surname = name_surname.surname
     today = datetime.now()
     #print(today.strftime("%Y-%m-%d"))
-    vaccination_date = today + timedelta(days=len(name) + len(surname))
+    vaccination_date = today + timedelta(days=len(name) - name.count(" ") + len(surname))
     response.status_code = status.HTTP_201_CREATED
     return {
         "id": app.id,
         "name": name,
         "surname": surname,
         "register_date": today.strftime("%Y-%m-%d"),
-        "vaccination_date": vaccination_date.strftime("%Y-%m-%d") + "+" + name + "+" + surname + "+" + today.strftime("%Y-%m-%d")
+        "vaccination_date": vaccination_date.strftime("%Y-%m-%d")
     }
 
 '''
