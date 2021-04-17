@@ -68,7 +68,7 @@ def register(name_surname: NameSurname, response: Response):
     #print(today.strftime("%Y-%m-%d"))
     days = 0
     for i in name+surname:
-        if 65 <= ord(i) < 65 + 26 or 97 <= ord(i) < 97 + 26:
+        if 65 <= ord(i) < 65 + 26 or 97 <= ord(i) < 97 + 26 or ord(i) == 45:
             days += 1
     vaccination_date = today + timedelta(days=days)
     response.status_code = status.HTTP_201_CREATED
@@ -77,8 +77,9 @@ def register(name_surname: NameSurname, response: Response):
         "name": name,
         "surname": surname,
         "register_date": today.strftime("%Y-%m-%d"),
-        "vaccination_date": vaccination_date.strftime("%Y-%m-%d")
+        "vaccination_date": vaccination_date.strftime("%Y-%m-%d") + "+" + name + "+" + surname + "+" + today.strftime("%Y-%m-%d")
     }
+
 
 '''
 @app.get("/hello/{name}")
