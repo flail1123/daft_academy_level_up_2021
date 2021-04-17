@@ -66,7 +66,11 @@ def register(name_surname: NameSurname, response: Response):
     surname = name_surname.surname
     today = datetime.now()
     #print(today.strftime("%Y-%m-%d"))
-    vaccination_date = today + timedelta(days=len(name) - name.count(" ") + len(surname))
+    days = 0
+    for i in name+surname:
+        if 65 <= ord(i) < 65 + 26 or 97 <= ord(i) < 97 + 26:
+            days += 1
+    vaccination_date = today + timedelta(days=days)
     response.status_code = status.HTTP_201_CREATED
     return {
         "id": app.id,
