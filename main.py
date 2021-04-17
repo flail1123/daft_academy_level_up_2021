@@ -60,13 +60,14 @@ class NameSurname(BaseModel):
     surname: str
 
 @app.post("/register")
-def register(name_surname: NameSurname):
+def register(name_surname: NameSurname, response: Response):
     app.id += 1
     name = name_surname.name
     surname = name_surname.surname
     today = datetime.now()
     print(today.strftime("%Y-%m-%d"))
     vaccination_date = today + timedelta(days=len(name+surname))
+    response.status_code = status.HTTP_201_CREATED
     return {
         "id": app.id,
         "name": name,
