@@ -26,3 +26,8 @@ def test_counter():
     response = client.get(f"/counter")
     assert response.status_code == 200
     assert response.text == "2"
+
+
+def test_register():
+    response = client.post(f"/register")
+    print(response)
