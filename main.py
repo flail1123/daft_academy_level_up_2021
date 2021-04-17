@@ -5,7 +5,7 @@ from datetime import *
 
 app = FastAPI()
 app.id = 0
-
+app.patients = []
 
 @app.get("/")
 def root_view():
@@ -72,13 +72,24 @@ def register(name_surname: NameSurname, response: Response):
             days += 1
     vaccination_date = today + timedelta(days=days)
     response.status_code = status.HTTP_201_CREATED
-    return {
+    result = {
         "id": app.id,
         "name": name,
         "surname": surname,
         "register_date": today.strftime("%Y-%m-%d"),
         "vaccination_date": vaccination_date.strftime("%Y-%m-%d")
     }
+    app.patients.append(result)
+    return result
+
+@app.get("/patient/{id}")
+def patient(id : int, response: Response):
+    if id == 0:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return
+    if id <= app.id:
+        return app.patients[id - 1]
+    response.status_code = status.HTTP_404_NOT_FOUND
 
 
 '''
