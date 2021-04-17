@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Response, status
-from hashlib import sha256
+from hashlib import sha512
 
 app = FastAPI()
 app.counter = 0
@@ -38,8 +38,8 @@ def method():
 
 @app.get("/auth")
 def auth(password, password_hash, response: Response):
-    hash_password = sha256(password.encode()).hexdigest()
-    print(password, password_hash, hash_password)
+    hash_password = sha512(password.encode()).hexdigest()
+    #print(password, password_hash, hash_password)
     if password != '' and hash_password == password_hash:
         response.status_code = status.HTTP_204_NO_CONTENT
     else:
