@@ -1,8 +1,10 @@
 from fastapi import FastAPI, Response, status
 from hashlib import sha512
+from pydantic import BaseModel
+from datetime import *
 
 app = FastAPI()
-app.counter = 0
+app.id = 0
 
 
 @app.get("/")
@@ -52,6 +54,26 @@ def auth(password=None, password_hash=None, response: Response = None):
         response.status_code = status.HTTP_401_UNAUTHORIZED
         print("401")
 
+
+class NameSurname(BaseModel):
+    name: str
+    surname: str
+
+@app.post("/register")
+def register(name_surname: NameSurname):
+    app.id += 1
+    name = name_surname.name
+    surname = name_surname.surname
+    today = datetime.now()
+    print(today.strftime("%Y-%m-%d"))
+    vaccination_date = today + timedelta(days=len(name+surname))
+    return {
+        "id": app.id,
+        "name": name,
+        "surname": surname,
+        "register_date": today.strftime("%Y-%m-%d"),
+        "vaccination_date": vaccination_date.strftime("%Y-%m-%d")
+    }
 
 '''
 @app.get("/hello/{name}")
