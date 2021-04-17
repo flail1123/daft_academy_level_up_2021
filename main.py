@@ -37,7 +37,7 @@ def method():
 
 @app.get("/auth")
 def auth(password, password_hash, response: Response):
-    if password == "":
+    if not password:
         response.status_code = status.HTTP_401_UNAUTHORIZED
         return
     hash_password = sha512(password.encode()).hexdigest()
