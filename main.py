@@ -84,7 +84,7 @@ def register(name_surname: NameSurname, response: Response):
 
 @app.get("/patient/{id}")
 def patient(id : int, response: Response):
-    if id == 0:
+    if id < 1:
         response.status_code = status.HTTP_400_BAD_REQUEST
         return
     if id <= app.id:
