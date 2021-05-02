@@ -1,17 +1,19 @@
-from fastapi import FastAPI, Response, status, Request, Cookie
+from fastapi import FastAPI, Response, status, Request, Cookie, Depends, FastAPI, HTTPException
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from hashlib import sha512, sha256
 from pydantic import BaseModel
 from datetime import *
 from fastapi.templating import Jinja2Templates
+import secrets
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 app.id = 0
 app.patients = []
 app.secret_key = "asdjfkljbaodifjhioudfyahhhghyhhhhihrphaoudfshgryerawdioghperadghper"
-app.login_token = ""
-app.login_session = ""
-
+app.login_session_token = ""
+app.login_token_token = ""
+security = HTTPBasic()
 
 @app.get("/")
 def root_view():
@@ -100,29 +102,30 @@ def hello(request: Request):
     return templates.TemplateResponse("hello.html", {"current_date": current_date, "request": request})
 
 
+
+def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
+    correct_username = secrets.compare_digest(credentials.username, "4dm1n")
+    correct_password = secrets.compare_digest(credentials.password, "NotSoSecurePa$$")
+    if not (correct_username and correct_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+        )
+    return
+
+
 @app.post("/login_session")
-def login_session(user: str, password: str, response: Response):
-    if user != "4dm1n" or password != "NotSoSecurePa$$":
-        response.status_code = status.HTTP_401_UNAUTHORIZED
-        return
+def login_session(response: Response):
+    Depends(get_current_username)
     response.status_code = status.HTTP_201_CREATED
-    session_token = sha256(f"{user}{password}{app.secret_key}".encode()).hexdigest()
-    app.access_tokens.append(session_token)
-    response.set_cookie(key="session_token", value=session_token)
-    app.login_session = session_token
-    return {"message": "Welcome"}
+    response.set_cookie(key="session_token", value="fake-cookie-session-value")
+    return
+
 
 @app.post("/login_token")
-def login_token(user: str, password: str, response: Response):
-    if user != "4dm1n" or password != "NotSoSecurePa$$":
-        response.status_code = status.HTTP_401_UNAUTHORIZED
-        return
+def login_session(response: Response):
+    Depends(get_current_username)
     response.status_code = status.HTTP_201_CREATED
-    session_token = sha256(f"{user}{password}{app.secret_key}".encode()).hexdigest()
-    app.login_token = session_token
-    return {"token": session_token}
-
-
+    return {"token": "fake-cookie-session-value"}
 
 
 
