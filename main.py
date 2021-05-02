@@ -1,9 +1,11 @@
-from fastapi import FastAPI, Response, status
+from fastapi import FastAPI, Response, status, Request
 from hashlib import sha512
 from pydantic import BaseModel
 from datetime import *
+from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
+templates = Jinja2Templates(directory="templates")
 app.id = 0
 app.patients = []
 
@@ -43,16 +45,12 @@ def method():
 def auth(password=None, password_hash=None, response: Response = None):
     if not password:
         response.status_code = status.HTTP_401_UNAUTHORIZED
-        print("401++")
         return
     hash_password = sha512(password.encode()).hexdigest()
-    #print(password, password_hash, hash_password)
     if hash_password == password_hash:
         response.status_code = status.HTTP_204_NO_CONTENT
-        print("204")
     else:
         response.status_code = status.HTTP_401_UNAUTHORIZED
-        print("401")
 
 
 class NameSurname(BaseModel):
@@ -65,7 +63,6 @@ def register(name_surname: NameSurname, response: Response):
     name = name_surname.name
     surname = name_surname.surname
     today = datetime.now()
-    #print(today.strftime("%Y-%m-%d"))
     days = 0
     for i in name+surname:
         if 65 <= ord(i) < 65 + 26 or 97 <= ord(i) < 97 + 26 or ord(i) == 45:
@@ -92,14 +89,8 @@ def patient(id : int, response: Response):
     response.status_code = status.HTTP_404_NOT_FOUND
 
 
-'''
-@app.get("/hello/{name}")
-async def hello_name_view(name: str):
-    return f"Hello {name}"
 
-
-@app.get("/counter")
-def counter():
-    app.counter += 1
-    return app.counter
-'''
+@app.get("/hello")
+def hello(request: Request):
+    current_date = date.today().strftime("%Y-%m-%d")
+    return templates.TemplateResponse("hello.html", {"current_date": current_date, "request": request})
