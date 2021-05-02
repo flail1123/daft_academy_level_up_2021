@@ -106,6 +106,7 @@ def hello(request: Request):
 def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
     correct_username = secrets.compare_digest(credentials.username, "4dm1n")
     correct_password = secrets.compare_digest(credentials.password, "NotSoSecurePa$$")
+    print(credentials.username, credentials.password)
     return correct_username and correct_password
 
 
