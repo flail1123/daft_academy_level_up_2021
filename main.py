@@ -6,6 +6,7 @@ from datetime import *
 from typing import Optional
 from fastapi.templating import Jinja2Templates
 import secrets
+from fastapi.responses import PlainTextResponse
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -135,7 +136,7 @@ def welcome_message(format, request):
     elif format == "html":
         return templates.TemplateResponse("hello.html", {"request": request})
     else:
-        return "Welcome!"
+        return PlainTextResponse("Welcome!")
 
 
 @app.get("/welcome_session")
