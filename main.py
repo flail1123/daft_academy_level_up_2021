@@ -165,7 +165,7 @@ def welcome_token(response: Response, request: Request, format: str = "", token:
 
 
 
-@app.get("/logout_session")
+@app.delete("/logout_session")
 def welcome_session(response: Response, request: Request, format: str = "", ads_id: Optional[str] = Cookie(None)):
     if ads_id != app.login_session_token or app.login_session_token == "":
         raise HTTPException(
@@ -177,7 +177,7 @@ def welcome_session(response: Response, request: Request, format: str = "", ads_
     app.login_session_token = ""
     return RedirectResponse("/logout_token&format="+str(format))
 
-@app.get("/logout_token")
+@app.delete("/logout_token")
 def welcome_token(response: Response, request: Request, format: str = "", token: str = ""):
     if token != app.login_token_token or app.login_token_token == "":
         raise HTTPException(
