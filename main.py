@@ -150,6 +150,7 @@ def welcome_session(response: Response, request: Request, format: str = "", ads_
 
     return welcome_message(format, request)
 
+@app.get("/welcome_token")
 def welcome_token(response: Response, request: Request, format: str = "", token: str = ""):
     if token != app.login_token_token and app.login_token_token != "":
         raise HTTPException(
@@ -157,5 +158,5 @@ def welcome_token(response: Response, request: Request, format: str = "", token:
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Basic"},
         )
-    response.status_code = status.HTTP_200_OK
+    response.status_code = status.HTTP_201_CREATED
     return welcome_message(format, request)
