@@ -7,6 +7,7 @@ from typing import Optional
 from fastapi.templating import Jinja2Templates
 import secrets
 from fastapi.responses import PlainTextResponse
+from fastapi.responses import RedirectResponse
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -130,13 +131,13 @@ def login_token(response: Response, username: str = Depends(get_current_username
     return {"token": "fake-cookie-session-value"}
 
 
-def welcome_message(format, request):
+def return_message(format, request, message):
     if format == "json":
-        return {"message": "Welcome!"}
+        return {"message": message}
     elif format == "html":
-        return templates.TemplateResponse("hello.html", {"request": request})
+        return templates.TemplateResponse("hello.html", {"message": message, request: request})
     else:
-        return PlainTextResponse("Welcome!")
+        return PlainTextResponse(message)
 
 
 @app.get("/welcome_session")
@@ -149,7 +150,7 @@ def welcome_session(response: Response, request: Request, format: str = "", ads_
         )
     response.status_code = status.HTTP_200_OK
 
-    return welcome_message(format, request)
+    return return_message(format, request, "Welcome!")
 
 @app.get("/welcome_token")
 def welcome_token(response: Response, request: Request, format: str = "", token: str = ""):
@@ -160,4 +161,37 @@ def welcome_token(response: Response, request: Request, format: str = "", token:
             headers={"WWW-Authenticate": "Basic"},
         )
     response.status_code = status.HTTP_200_OK
-    return welcome_message(format, request)
+    return return_message(format, request, "Welcome!")
+
+
+
+@app.get("/logout_session")
+def welcome_session(response: Response, request: Request, format: str = "", ads_id: Optional[str] = Cookie(None)):
+    if ads_id != app.login_session_token or app.login_session_token == "":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(ads_id),
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    response.status_code = status.HTTP_303_SEE_OTHER
+    app.login_session_token = ""
+    return RedirectResponse("/logout_token&format="+str(format))
+
+@app.get("/logout_token")
+def welcome_token(response: Response, request: Request, format: str = "", token: str = ""):
+    if token != app.login_token_token or app.login_token_token == "":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(token),
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    response.status_code = status.HTTP_303_SEE_OTHER
+    app.login_token_token = ""
+    return RedirectResponse("/logout_token&format="+str(format))
+
+
+
+@app.get("/logged_out")
+def logged_out(response: Response, request: Request, format: str = ""):
+    response.status_code = status.HTTP_200_OK
+    return return_message(format, request, "Logged out!")
