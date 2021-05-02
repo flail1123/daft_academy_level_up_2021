@@ -140,10 +140,10 @@ def welcome_message(format, request):
 
 @app.get("/welcome_session")
 def welcome_session(response: Response, request: Request, format: str = "", ads_id: Optional[str] = Cookie(None)):
-    if ads_id != app.login_session_token and app.login_session_token != "":
+    if not(ads_id != app.login_session_token and app.login_session_token != ""):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=str(ads_id),
+            detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Basic"},
         )
     response.status_code = status.HTTP_200_OK
@@ -151,10 +151,10 @@ def welcome_session(response: Response, request: Request, format: str = "", ads_
     return welcome_message(format, request)
 
 def welcome_token(response: Response, request: Request, format: str = "", token: str = ""):
-    if token != app.login_token_token and app.login_token_token != "":
+    if not(token != app.login_token_token and app.login_token_token != ""):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=str(format) + "+" +str(token),
+            detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Basic"},
         )
     response.status_code = status.HTTP_200_OK
