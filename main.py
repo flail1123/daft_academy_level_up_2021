@@ -107,9 +107,9 @@ def hello(request: Request):
 
 
 def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
-    #correct_username = secrets.compare_digest(credentials.username, "stanleyjobson")
-    #correct_password = secrets.compare_digest(credentials.password, "swordfish")
-    #if not (correct_username and correct_password):
+    # correct_username = secrets.compare_digest(credentials.username, "stanleyjobson")
+    # correct_password = secrets.compare_digest(credentials.password, "swordfish")
+    # if not (correct_username and correct_password):
     #    raise HTTPException(
     #        status_code=status.HTTP_401_UNAUTHORIZED,
     #        detail="Incorrect email or password",
@@ -141,7 +141,8 @@ def return_message(format, request, message):
 
 
 @app.get("/welcome_session")
-def welcome_session(response: Response, request: Request, format: str = "", session_token: Optional[str] = Cookie(None)):
+def welcome_session(response: Response, request: Request, format: str = "",
+                    session_token: Optional[str] = Cookie(None)):
     if session_token != "4dm1n+NotSoSecurePa$$":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -151,6 +152,7 @@ def welcome_session(response: Response, request: Request, format: str = "", sess
     response.status_code = status.HTTP_200_OK
 
     return return_message(format, request, "Welcome!")
+
 
 @app.get("/welcome_token")
 def welcome_token(response: Response, request: Request, format: str = "", token: str = ""):
@@ -164,10 +166,9 @@ def welcome_token(response: Response, request: Request, format: str = "", token:
     return return_message(format, request, "Welcome!")
 
 
-
 @app.delete("/logout_session")
-def logout_session(response: Response, request: Request, format: str = "", ads_id: Optional[str] = Cookie(None)):
-    if ads_id != app.login_session_token or app.login_session_token == "":
+def logout_session(response: Response, request: Request, format: str = "", session_token: Optional[str] = Cookie(None)):
+    if session_token != "4dm1n+NotSoSecurePa$$":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="session",
@@ -175,11 +176,12 @@ def logout_session(response: Response, request: Request, format: str = "", ads_i
         )
     response.status_code = status.HTTP_303_SEE_OTHER
     app.login_session_token = ""
-    return RedirectResponse("/logged_out?format="+str(format))
+    return RedirectResponse("/logged_out?format=" + str(format))
+
 
 @app.delete("/logout_token")
 def logout_token(response: Response, request: Request, format: str = "", token: str = ""):
-    if token != app.login_token_token or app.login_token_token == "":
+    if token != "4dm1n+NotSoSecurePa$$":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="token",
@@ -187,8 +189,7 @@ def logout_token(response: Response, request: Request, format: str = "", token: 
         )
     response.status_code = status.HTTP_303_SEE_OTHER
     app.login_token_token = ""
-    return RedirectResponse("/logged_out?format="+str(format))
-
+    return RedirectResponse("/logged_out?format=" + str(format))
 
 
 @app.get("/logged_out")
