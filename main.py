@@ -3,6 +3,7 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from hashlib import sha512, sha256
 from pydantic import BaseModel
 from datetime import *
+from typing import Optional
 from fastapi.templating import Jinja2Templates
 import secrets
 
@@ -14,6 +15,7 @@ app.secret_key = "asdjfkljbaodifjhioudfyahhhghyhhhhihrphaoudfshgryerawdioghperad
 app.login_session_token = ""
 app.login_token_token = ""
 security = HTTPBasic()
+
 
 @app.get("/")
 def root_view():
@@ -46,7 +48,6 @@ def method():
     return {"method": "OPTIONS"}
 
 
-
 @app.get("/auth")
 def auth(password=None, password_hash=None, response: Response = None):
     if not password:
@@ -63,6 +64,7 @@ class NameSurname(BaseModel):
     name: str
     surname: str
 
+
 @app.post("/register")
 def register(name_surname: NameSurname, response: Response):
     app.id += 1
@@ -70,7 +72,7 @@ def register(name_surname: NameSurname, response: Response):
     surname = name_surname.surname
     today = datetime.now()
     days = 0
-    for i in name+surname:
+    for i in name + surname:
         if 65 <= ord(i) < 65 + 26 or 97 <= ord(i) < 97 + 26 or ord(i) == 45:
             days += 1
     vaccination_date = today + timedelta(days=days)
@@ -85,8 +87,9 @@ def register(name_surname: NameSurname, response: Response):
     app.patients.append(result)
     return result
 
+
 @app.get("/patient/{id}")
-def patient(id : int, response: Response):
+def patient(id: int, response: Response):
     if id < 1:
         response.status_code = status.HTTP_400_BAD_REQUEST
         return
@@ -95,12 +98,10 @@ def patient(id : int, response: Response):
     response.status_code = status.HTTP_404_NOT_FOUND
 
 
-
 @app.get("/hello")
 def hello(request: Request):
     current_date = date.today().strftime("%Y-%m-%d")
     return templates.TemplateResponse("hello.html", {"current_date": current_date, "request": request})
-
 
 
 def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
@@ -128,19 +129,45 @@ def login_token(response: Response, username: str = Depends(get_current_username
     return {"token": "fake-cookie-session-value"}
 
 
+def welcome_message(format):
+    if format == "json":
+        return {"message": "Welcome!"}
+    elif format == "html":
+        return """<!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Title</title>
+                </head>
+                <body>
+                <h1>Welcome!</h1>
+                </body>
+                </html>
+                """
+    else:
+        return "Welcome!"
 
 
+@app.get("/welcome_session")
+def welcome_session(response: Response, format: str = "", ads_id: Optional[str] = Cookie(None), ):
+    if ads_id != "fake-cookie-session-value":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    response.status_code = status.HTTP_200_OK
+
+    return welcome_message(format)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+@app.get("/welcome_token")
+def welcome_token(response: Response, format: str = "", token: str = ""):
+    if token != "fake-cookie-session-value":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    response.status_code = status.HTTP_201_CREATED
+    return welcome_message(format)
