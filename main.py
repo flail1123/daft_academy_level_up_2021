@@ -167,7 +167,7 @@ def welcome_token(response: Response, request: Request, format: str = "", token:
 
 @app.delete("/logout_session")
 def logout_session(response: Response, request: Request, format: str = "", ads_id: Optional[str] = Cookie(None)):
-    if ads_id != app.login_session_token or app.login_session_token == "":
+    if not(ads_id != app.login_session_token or app.login_session_token == ""):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="session",
@@ -179,7 +179,7 @@ def logout_session(response: Response, request: Request, format: str = "", ads_i
 
 @app.delete("/logout_token")
 def logout_token(response: Response, request: Request, format: str = "", token: str = ""):
-    if token != app.login_token_token or app.login_token_token == "":
+    if not(token != app.login_token_token or app.login_token_token == ""):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="token",
