@@ -104,26 +104,26 @@ def hello(request: Request):
 
 
 def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
-    correct_username = secrets.compare_digest(credentials.username, "4dm1n")
-    correct_password = secrets.compare_digest(credentials.password, "NotSoSecurePa$$")
-    return correct_username and correct_password
+    correct_username = secrets.compare_digest(credentials.username, "stanleyjobson")
+    correct_password = secrets.compare_digest(credentials.password, "swordfish")
+    if not (correct_username and correct_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
 
 
 @app.post("/login_session")
-def login_session(response: Response, is_ok: bool = Depends(get_current_username)):
-    if not is_ok:
-        response.status_code = status.HTTP_401_UNAUTHORIZED
-        return
+def login_session(response: Response, username: str = Depends(get_current_username)):
     response.status_code = status.HTTP_201_CREATED
     response.set_cookie(key="session_token", value="fake-cookie-session-value")
     return
 
 
 @app.post("/login_token")
-def login_token(response: Response, is_ok: bool = Depends(get_current_username)):
-    if not is_ok:
-        response.status_code = status.HTTP_401_UNAUTHORIZED
-        return
+def login_token(response: Response, username: str = Depends(get_current_username)):
     response.status_code = status.HTTP_201_CREATED
     return {"token": "fake-cookie-session-value"}
 
