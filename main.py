@@ -106,24 +106,24 @@ def hello(request: Request):
 def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
     correct_username = secrets.compare_digest(credentials.username, "4dm1n")
     correct_password = secrets.compare_digest(credentials.password, "NotSoSecurePa$$")
-    if not (correct_username and correct_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-        )
-    return
+    return correct_username and correct_password
 
 
 @app.post("/login_session")
 def login_session(response: Response):
-    Depends(get_current_username)
+    if not Depends(get_current_username):
+        response.status_code = status.HTTP_401_UNAUTHORIZED
+        return
     response.status_code = status.HTTP_201_CREATED
     response.set_cookie(key="session_token", value="fake-cookie-session-value")
     return
 
 
 @app.post("/login_token")
-def login_session(response: Response):
-    Depends(get_current_username)
+def login_token(response: Response):
+    if not Depends(get_current_username):
+        response.status_code = status.HTTP_401_UNAUTHORIZED
+        return
     response.status_code = status.HTTP_201_CREATED
     return {"token": "fake-cookie-session-value"}
 
