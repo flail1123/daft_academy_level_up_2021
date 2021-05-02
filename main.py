@@ -168,7 +168,7 @@ def welcome_token(response: Response, request: Request, format: str = "", token:
 
 @app.delete("/logout_session")
 def logout_session(response: Response, request: Request, format: str = "", session_token: Optional[str] = Cookie(None)):
-    if session_token != "4dm1n+NotSoSecurePa$$":
+    if session_token == "4dm1n+NotSoSecurePa$$":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="session",
@@ -181,7 +181,7 @@ def logout_session(response: Response, request: Request, format: str = "", sessi
 
 @app.delete("/logout_token")
 def logout_token(response: Response, request: Request, format: str = "", token: str = ""):
-    if token != "4dm1n+NotSoSecurePa$$":
+    if token == "4dm1n+NotSoSecurePa$$":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="token",
