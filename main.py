@@ -120,37 +120,29 @@ def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
 def login_session(response: Response, username: str = Depends(get_current_username)):
     response.status_code = status.HTTP_201_CREATED
     response.set_cookie(key="session_token", value="fake-cookie-session-value")
+    app.login_session_token = "fake-cookie-session-value"
     return
 
 
 @app.post("/login_token")
 def login_token(response: Response, username: str = Depends(get_current_username)):
     response.status_code = status.HTTP_201_CREATED
+    app.login_token_token = "fake-cookie-session-value"
     return {"token": "fake-cookie-session-value"}
 
 
-def welcome_message(format):
+def welcome_message(format, request):
     if format == "json":
         return {"message": "Welcome!"}
     elif format == "html":
-        return """<!DOCTYPE html>
-                <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Title</title>
-                </head>
-                <body>
-                <h1>Welcome!</h1>
-                </body>
-                </html>
-                """
+        return templates.TemplateResponse("hello.html", {"request": request})
     else:
         return "Welcome!"
 
 
 @app.get("/welcome_session")
-def welcome_session(response: Response, format: str = "", ads_id: Optional[str] = Cookie(None), ):
-    if ads_id != "fake-cookie-session-value":
+def welcome_session(response: Response, request: Request, format: str = "", ads_id: Optional[str] = Cookie(None)):
+    if ads_id != app.login_session_token and app.login_session_token != "":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
@@ -158,16 +150,16 @@ def welcome_session(response: Response, format: str = "", ads_id: Optional[str] 
         )
     response.status_code = status.HTTP_200_OK
 
-    return welcome_message(format)
+    return welcome_message(format, request)
 
 
 @app.get("/welcome_token")
-def welcome_token(response: Response, format: str = "", token: str = ""):
-    if token != "fake-cookie-session-value":
+def welcome_token(response: Response, request: Request, format: str = "", token: str = ""):
+    if token != app.login_token_token and app.login_token_token != "":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Basic"},
         )
     response.status_code = status.HTTP_201_CREATED
-    return welcome_message(format)
+    return welcome_message(format, request)
