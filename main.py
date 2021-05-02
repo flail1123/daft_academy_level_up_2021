@@ -1,5 +1,5 @@
-from fastapi import FastAPI, Response, status, Request
-from hashlib import sha512
+from fastapi import FastAPI, Response, status, Request, Cookie
+from hashlib import sha512, sha256
 from pydantic import BaseModel
 from datetime import *
 from fastapi.templating import Jinja2Templates
@@ -8,6 +8,10 @@ app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 app.id = 0
 app.patients = []
+app.secret_key = "asdjfkljbaodifjhioudfyahhhghyhhhhihrphaoudfshgryerawdioghperadghper"
+app.login_token = ""
+app.login_session = ""
+
 
 @app.get("/")
 def root_view():
@@ -94,3 +98,46 @@ def patient(id : int, response: Response):
 def hello(request: Request):
     current_date = date.today().strftime("%Y-%m-%d")
     return templates.TemplateResponse("hello.html", {"current_date": current_date, "request": request})
+
+
+@app.post("/login_session")
+def login_session(user: str, password: str, response: Response):
+    if user != "4dm1n" or password != "NotSoSecurePa$$":
+        response.status_code = status.HTTP_401_UNAUTHORIZED
+        return
+    response.status_code = status.HTTP_201_CREATED
+    session_token = sha256(f"{user}{password}{app.secret_key}".encode()).hexdigest()
+    app.access_tokens.append(session_token)
+    response.set_cookie(key="session_token", value=session_token)
+    app.login_session = session_token
+    return {"message": "Welcome"}
+
+@app.post("/login_token")
+def login_token(user: str, password: str, response: Response):
+    if user != "4dm1n" or password != "NotSoSecurePa$$":
+        response.status_code = status.HTTP_401_UNAUTHORIZED
+        return
+    response.status_code = status.HTTP_201_CREATED
+    session_token = sha256(f"{user}{password}{app.secret_key}".encode()).hexdigest()
+    app.login_token = session_token
+    return {"token": session_token}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
