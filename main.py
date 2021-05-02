@@ -111,20 +111,22 @@ def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
 
 @app.post("/login_session")
 def login_session(response: Response):
-    if not Depends(get_current_username):
-        response.status_code = status.HTTP_201_CREATED
+    credentials = Depends(security)
+    if credentials.username != "4dm1n" or credentials.password != "NotSoSecurePa$$":
+        response.status_code = status.HTTP_401_UNAUTHORIZED
         return
-    response.status_code = status.HTTP_401_UNAUTHORIZED
+    response.status_code = status.HTTP_201_CREATED
     response.set_cookie(key="session_token", value="fake-cookie-session-value")
     return
 
 
 @app.post("/login_token")
 def login_token(response: Response):
-    if not Depends(get_current_username):
-        response.status_code = status.HTTP_201_CREATED
+    credentials = Depends(security)
+    if credentials.username != "4dm1n" or credentials.password != "NotSoSecurePa$$":
+        response.status_code = status.HTTP_401_UNAUTHORIZED
         return
-    response.status_code = status.HTTP_401_UNAUTHORIZED
+    response.status_code = status.HTTP_201_CREATED
     return {"token": "fake-cookie-session-value"}
 
 
