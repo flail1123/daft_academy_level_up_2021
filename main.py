@@ -115,20 +115,20 @@ def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Basic"},
         )
-    return credentials.username
+    return credentials.username + "+" +credentials.password
 
 
 @app.post("/login_session")
-def login_session(response: Response, username: str = Depends(get_current_username)):
+def login_session(response: Response, token: str = Depends(get_current_username)):
     response.status_code = status.HTTP_201_CREATED
-    response.set_cookie(key="session_token", value="fake-cookie-session-value")
+    response.set_cookie(key="session_token", value=token)
     return
 
 
 @app.post("/login_token")
-def login_token(response: Response, username: str = Depends(get_current_username)):
+def login_token(response: Response, token: str = Depends(get_current_username)):
     response.status_code = status.HTTP_201_CREATED
-    return {"token": "fake-cookie-session-value"}
+    return {"token": token}
 
 
 def return_message(format, request, message):
@@ -167,7 +167,7 @@ def welcome_token(response: Response, request: Request, format: str = "", token:
 
 @app.delete("/logout_session")
 def logout_session(response: Response, request: Request, format: str = "", ads_id: Optional[str] = Cookie(None)):
-    if not(ads_id != app.login_session_token or app.login_session_token == ""):
+    if ads_id != app.login_session_token or app.login_session_token == "":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="session",
@@ -179,7 +179,7 @@ def logout_session(response: Response, request: Request, format: str = "", ads_i
 
 @app.delete("/logout_token")
 def logout_token(response: Response, request: Request, format: str = "", token: str = ""):
-    if not(token != app.login_token_token or app.login_token_token == ""):
+    if token != app.login_token_token or app.login_token_token == "":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="token",
