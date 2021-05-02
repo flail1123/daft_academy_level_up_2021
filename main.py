@@ -158,5 +158,5 @@ def welcome_token(response: Response, request: Request, format: str = "", token:
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Basic"},
         )
-    response.status_code = status.HTTP_201_CREATED
+    response.status_code = status.HTTP_200_OK
     return welcome_message(format, request)
