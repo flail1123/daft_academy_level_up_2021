@@ -107,15 +107,15 @@ def hello(request: Request):
 
 
 def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
-    correct_username = secrets.compare_digest(credentials.username, "stanleyjobson")
-    correct_password = secrets.compare_digest(credentials.password, "swordfish")
-    if not (correct_username and correct_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Basic"},
-        )
-    return credentials.username + "+" +credentials.password
+    #correct_username = secrets.compare_digest(credentials.username, "stanleyjobson")
+    #correct_password = secrets.compare_digest(credentials.password, "swordfish")
+    #if not (correct_username and correct_password):
+    #    raise HTTPException(
+    #        status_code=status.HTTP_401_UNAUTHORIZED,
+    #        detail="Incorrect email or password",
+    #        headers={"WWW-Authenticate": "Basic"},
+    #    )
+    return credentials.username + "+" + credentials.password
 
 
 @app.post("/login_session")
