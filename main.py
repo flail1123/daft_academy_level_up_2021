@@ -144,7 +144,7 @@ def welcome_session(response: Response, request: Request, format: str = "", ads_
     if ads_id != app.login_session_token or app.login_session_token != "":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=str(token),
+            detail=str(ads_id),
             headers={"WWW-Authenticate": "Basic"},
         )
     response.status_code = status.HTTP_200_OK
