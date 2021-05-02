@@ -110,9 +110,8 @@ def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
 
 
 @app.post("/login_session")
-def login_session(response: Response):
-    credentials = Depends(security)
-    if credentials.username != "4dm1n" or credentials.password != "NotSoSecurePa$$":
+def login_session(response: Response, is_ok: bool = Depends(get_current_username)):
+    if not is_ok:
         response.status_code = status.HTTP_401_UNAUTHORIZED
         return
     response.status_code = status.HTTP_201_CREATED
@@ -121,9 +120,8 @@ def login_session(response: Response):
 
 
 @app.post("/login_token")
-def login_token(response: Response):
-    credentials = Depends(security)
-    if credentials.username != "4dm1n" or credentials.password != "NotSoSecurePa$$":
+def login_token(response: Response, is_ok: bool = Depends(get_current_username)):
+    if not is_ok:
         response.status_code = status.HTTP_401_UNAUTHORIZED
         return
     response.status_code = status.HTTP_201_CREATED
