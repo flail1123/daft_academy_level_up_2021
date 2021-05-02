@@ -141,11 +141,11 @@ def return_message(format, request, message):
 
 
 @app.get("/welcome_session")
-def welcome_session(response: Response, request: Request, format: str = "", ads_id: Optional[str] = Cookie(None)):
-    if ads_id != "4dm1n+NotSoSecurePa$$":
+def welcome_session(response: Response, request: Request, format: str = "", session_token: Optional[str] = Cookie(None)):
+    if session_token != "4dm1n+NotSoSecurePa$$":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=str(ads_id) + "+" + str(app.login_session_token),
+            detail=str(session_token) + "+" + str(app.login_session_token),
             headers={"WWW-Authenticate": "Basic"},
         )
     response.status_code = status.HTTP_200_OK
