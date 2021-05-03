@@ -14,8 +14,8 @@ templates = Jinja2Templates(directory="templates")
 app.id = 0
 app.patients = []
 app.secret_key = "asdjfkljbaodifjhioudfyahhhghyhhhhihrphaoudfshgryerawdioghperadghper"
-app.login_session_token = ""
-app.login_token_token = ""
+app.login_session_token = True
+app.login_token_token = True
 security = HTTPBasic()
 
 
@@ -150,7 +150,7 @@ def welcome_session(response: Response, request: Request, format: str = "",
             headers={"WWW-Authenticate": "Basic"},
         )
     response.status_code = status.HTTP_200_OK
-
+    app.login_session_token = True
     return return_message(format, request, "Welcome!")
 
 
@@ -163,32 +163,33 @@ def welcome_token(response: Response, request: Request, format: str = "", token:
             headers={"WWW-Authenticate": "Basic"},
         )
     response.status_code = status.HTTP_200_OK
+    app.login_token_token = True
     return return_message(format, request, "Welcome!")
 
 
 @app.delete("/logout_session")
 def logout_session(response: Response, request: Request, format: str = "", session_token: Optional[str] = Cookie(None)):
-    if session_token == "4dm1n+NotSoSecurePa$$":
+    if session_token != "4dm1n+NotSoSecurePa$$" and app.login_session_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="session",
             headers={"WWW-Authenticate": "Basic"},
         )
     response.status_code = status.HTTP_303_SEE_OTHER
-    app.login_session_token = ""
+    app.login_session_token = False
     return RedirectResponse("/logged_out?format=" + str(format))
 
 
 @app.delete("/logout_token")
 def logout_token(response: Response, request: Request, format: str = "", token: str = ""):
-    if token == "4dm1n+NotSoSecurePa$$":
+    if token != "4dm1n+NotSoSecurePa$$" and app.login_token_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="token",
             headers={"WWW-Authenticate": "Basic"},
         )
     response.status_code = status.HTTP_303_SEE_OTHER
-    app.login_token_token = ""
+    app.login_token_token = False
     return RedirectResponse("/logged_out?format=" + str(format))
 
 
