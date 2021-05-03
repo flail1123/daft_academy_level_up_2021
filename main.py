@@ -14,8 +14,8 @@ templates = Jinja2Templates(directory="templates")
 app.id = 0
 app.patients = []
 app.secret_key = "asdjfkljbaodifjhioudfyahhhghyhhhhihrphaoudfshgryerawdioghperadghper"
-app.login_session_token = ""
-app.login_token_token = ""
+app.login_session_token = None
+app.login_token_token = None
 security = HTTPBasic()
 
 
