@@ -14,8 +14,8 @@ templates = Jinja2Templates(directory="templates")
 app.id = 0
 app.patients = []
 app.secret_key = "asdjfkljbaodifjhioudfyahhhghyhhhhihrphaoudfshgryerawdioghperadghper"
-app.login_session_token = True
-app.login_token_token = True
+app.login_session_token = ""
+app.login_token_token = ""
 security = HTTPBasic()
 
 
@@ -122,12 +122,14 @@ def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
 def login_session(response: Response, token: str = Depends(get_current_username)):
     response.status_code = status.HTTP_201_CREATED
     response.set_cookie(key="session_token", value=token)
+    app.login_session_token = "4dm1n+NotSoSecurePa$$"
     return
 
 
 @app.post("/login_token")
 def login_token(response: Response, token: str = Depends(get_current_username)):
     response.status_code = status.HTTP_201_CREATED
+    app.login_token_token = "4dm1n+NotSoSecurePa$$"
     return {"token": token}
 
 
@@ -143,33 +145,31 @@ def return_message(format, request, message):
 @app.get("/welcome_session")
 def welcome_session(response: Response, request: Request, format: str = "",
                     session_token: Optional[str] = Cookie(None)):
-    if session_token != "4dm1n+NotSoSecurePa$$":
+    if session_token != app.login_session_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(session_token) + "+" + str(app.login_session_token),
             headers={"WWW-Authenticate": "Basic"},
         )
     response.status_code = status.HTTP_200_OK
-    app.login_session_token = True
     return return_message(format, request, "Welcome!")
 
 
 @app.get("/welcome_token")
 def welcome_token(response: Response, request: Request, format: str = "", token: str = ""):
-    if token != "4dm1n+NotSoSecurePa$$":
+    if token != app.login_token_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(token) + "+" + str(app.login_token_token),
             headers={"WWW-Authenticate": "Basic"},
         )
     response.status_code = status.HTTP_200_OK
-    app.login_token_token = True
     return return_message(format, request, "Welcome!")
 
 
 @app.delete("/logout_session")
 def logout_session(response: Response, request: Request, format: str = "", session_token: Optional[str] = Cookie(None)):
-    if session_token != "4dm1n+NotSoSecurePa$$" and app.login_session_token:
+    if session_token != "4dm1n+NotSoSecurePa$$" and not app.login_session_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="session",
@@ -182,7 +182,7 @@ def logout_session(response: Response, request: Request, format: str = "", sessi
 
 @app.delete("/logout_token")
 def logout_token(response: Response, request: Request, format: str = "", token: str = ""):
-    if token != "4dm1n+NotSoSecurePa$$" and app.login_token_token:
+    if token != "4dm1n+NotSoSecurePa$$" and not app.login_token_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="token",
