@@ -145,9 +145,7 @@ def return_message(format, request, message):
 @app.get("/welcome_session")
 def welcome_session(response: Response, request: Request, format: str = "",
                     session_token: Optional[str] = Cookie(None)):
-    string = "Welcome_session, format: " + format + "token: " + session_token + "app.login_session_token: " + app.login_session_token
-    assert False, string
-    if session_token != app.login_session_token:
+    if session_token != app.login_session_token or app.login_session_token is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(session_token) + "+" + str(app.login_session_token),
@@ -159,9 +157,7 @@ def welcome_session(response: Response, request: Request, format: str = "",
 
 @app.get("/welcome_token")
 def welcome_token(response: Response, request: Request, format: str = "", token: str = ""):
-    string = "Welcome_token, format: " + format + "token: " + token + "app.login_token_token: " + app.login_token_token
-    assert False, string
-    if token != app.login_token_token:
+    if token != app.login_token_token or app.login_token_token is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=str(token) + "+" + str(app.login_token_token),
@@ -173,27 +169,27 @@ def welcome_token(response: Response, request: Request, format: str = "", token:
 
 @app.delete("/logout_session")
 def logout_session(response: Response, request: Request, format: str = "", session_token: Optional[str] = Cookie(None)):
-    if session_token != "4dm1n+NotSoSecurePa$$" and not app.login_session_token:
+    if session_token != app.login_session_token or app.login_session_token is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="session",
             headers={"WWW-Authenticate": "Basic"},
         )
     response.status_code = status.HTTP_303_SEE_OTHER
-    app.login_session_token = False
+    app.login_session_token = None
     return RedirectResponse("/logged_out?format=" + str(format))
 
 
 @app.delete("/logout_token")
 def logout_token(response: Response, request: Request, format: str = "", token: str = ""):
-    if token != "4dm1n+NotSoSecurePa$$" and not app.login_token_token:
+    if token != app.login_token_token or app.login_token_token is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="token",
             headers={"WWW-Authenticate": "Basic"},
         )
     response.status_code = status.HTTP_303_SEE_OTHER
-    app.login_token_token = False
+    app.login_token_token = None
     return RedirectResponse("/logged_out?format=" + str(format))
 
 
