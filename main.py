@@ -145,6 +145,8 @@ def return_message(format, request, message):
 @app.get("/welcome_session")
 def welcome_session(response: Response, request: Request, format: str = "",
                     session_token: Optional[str] = Cookie(None)):
+    string = "Welcome_session, format: " + format + "token: " + session_token + "app.login_session_token: " + app.login_session_token
+    assert False, string
     if session_token != app.login_session_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -157,6 +159,8 @@ def welcome_session(response: Response, request: Request, format: str = "",
 
 @app.get("/welcome_token")
 def welcome_token(response: Response, request: Request, format: str = "", token: str = ""):
+    string = "Welcome_token, format: " + format + "token: " + token + "app.login_token_token: " + app.login_token_token
+    assert False, string
     if token != app.login_token_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
