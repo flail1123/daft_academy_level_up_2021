@@ -4,7 +4,7 @@ from main import app
 
 client = TestClient(app)
 
-
+'''
 def test_read_main():
     response = client.get("/")
     assert response.status_code == 200
@@ -31,3 +31,12 @@ def test_counter():
 def test_register():
     response = client.post(f"/register")
     print(response)
+'''
+
+
+def test_logout():
+    response = client.post(f"/login_token")
+    response = client.delete(f"/logout_token?token=4dm1n+NotSoSecurePa$$")
+    print(response)
+
+test_logout()

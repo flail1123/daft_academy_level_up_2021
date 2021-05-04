@@ -177,7 +177,7 @@ def logout_session(response: Response, request: Request, format: str = "", sessi
         )
     response.status_code = status.HTTP_303_SEE_OTHER
     app.login_session_token = None
-    return RedirectResponse("/logged_out?format=" + str(format))
+    return RedirectResponse("/logged_out?format=" + str(format), status_code=303)
 
 
 @app.delete("/logout_token")
@@ -190,7 +190,7 @@ def logout_token(response: Response, request: Request, format: str = "", token: 
         )
     response.status_code = status.HTTP_303_SEE_OTHER
     app.login_token_token = None
-    return RedirectResponse("/logged_out?format=" + str(format))
+    return RedirectResponse("/logged_out?format=" + str(format), status_code=303)
 
 
 @app.get("/logged_out")
