@@ -115,7 +115,8 @@ def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
     #        detail="Incorrect email or password",
     #        headers={"WWW-Authenticate": "Basic"},
     #    )
-    return credentials.username + "+" + credentials.password
+    app.count += 1
+    return credentials.username + "+" + credentials.password + str(app.count)
 
 
 @app.post("/login_session")
@@ -124,8 +125,7 @@ def login_session(response: Response, token: str = Depends(get_current_username)
     response.set_cookie(key="session_token", value=token)
     if len(app.login_token) == 3:
         app.login_token.pop(0)
-    app.login_token.append("4dm1n+NotSoSecurePa$$" + str(app.count))
-    app.count += 1
+    app.login_token.append(token)
     return
 
 
@@ -134,8 +134,7 @@ def login_token(response: Response, token: str = Depends(get_current_username)):
     response.status_code = status.HTTP_201_CREATED
     if len(app.login_token) == 3:
         app.login_token.pop(0)
-    app.login_token.append("4dm1n+NotSoSecurePa$$" + str(app.count))
-    app.count += 1
+    app.login_token.append(token)
     return {"token": token}
 
 
