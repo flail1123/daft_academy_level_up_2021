@@ -123,8 +123,8 @@ def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
 def login_session(response: Response, token: str = Depends(get_current_username)):
     response.status_code = status.HTTP_201_CREATED
     response.set_cookie(key="session_token", value=token)
-    if len(app.login_token) == 5:
-        app.login_token.pop(0)
+    #if len(app.login_token) == 5:
+    #    app.login_token.pop(0)
     app.login_token.append(token)
     return
 
@@ -132,8 +132,8 @@ def login_session(response: Response, token: str = Depends(get_current_username)
 @app.post("/login_token")
 def login_token(response: Response, token: str = Depends(get_current_username)):
     response.status_code = status.HTTP_201_CREATED
-    if len(app.login_token) == 5:
-        app.login_token.pop(0)
+    #if len(app.login_token) == 5:
+    #    app.login_token.pop(0)
     app.login_token.append(token)
     return {"token": token}
 
