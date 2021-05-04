@@ -116,7 +116,7 @@ def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
     #        headers={"WWW-Authenticate": "Basic"},
     #    )
     app.count += 1
-    return credentials.username + "+" + credentials.password + str(app.count)
+    return credentials.username + "+" + credentials.password #+ str(app.count)
 
 
 @app.post("/login_session")
