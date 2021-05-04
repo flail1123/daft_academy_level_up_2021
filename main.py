@@ -15,8 +15,7 @@ app.id = 0
 app.count = 0
 app.patients = []
 app.secret_key = "asdjfkljbaodifjhioudfyahhhghyhhhhihrphaoudfshgryerawdioghperadghper"
-app.login_session_token = []
-app.login_token_token = []
+app.login_token = []
 security = HTTPBasic()
 
 
@@ -123,9 +122,9 @@ def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
 def login_session(response: Response, token: str = Depends(get_current_username)):
     response.status_code = status.HTTP_201_CREATED
     response.set_cookie(key="session_token", value=token)
-    if len(app.login_session_token) == 3:
-        app.login_session_token = app.login_token_token[1:]
-    app.login_session_token.append("4dm1n+NotSoSecurePa$$" + str(app.count))
+    if len(app.login_token) == 3:
+        app.login_token.pop(0)
+    app.login_token.append("4dm1n+NotSoSecurePa$$" + str(app.count))
     app.count += 1
     return
 
@@ -133,9 +132,9 @@ def login_session(response: Response, token: str = Depends(get_current_username)
 @app.post("/login_token")
 def login_token(response: Response, token: str = Depends(get_current_username)):
     response.status_code = status.HTTP_201_CREATED
-    if len(app.login_token_token) == 3:
-        app.login_token_token = app.login_token_token[1:]
-    app.login_token_token.append("4dm1n+NotSoSecurePa$$" + str(app.count))
+    if len(app.login_token) == 3:
+        app.login_token.pop(0)
+    app.login_token.append("4dm1n+NotSoSecurePa$$" + str(app.count))
     app.count += 1
     return {"token": token}
 
@@ -152,10 +151,10 @@ def return_message(format, request, message):
 @app.get("/welcome_session")
 def welcome_session(response: Response, request: Request, format: str = "",
                     session_token: Optional[str] = Cookie(None)):
-    if session_token not in app.login_session_token:
+    if session_token not in app.login_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=str(session_token) + "+" + str(app.login_session_token),
+            detail=str(session_token) + "+" + str(app.login_token),
             headers={"WWW-Authenticate": "Basic"},
         )
     response.status_code = status.HTTP_200_OK
@@ -164,10 +163,10 @@ def welcome_session(response: Response, request: Request, format: str = "",
 
 @app.get("/welcome_token")
 def welcome_token(response: Response, request: Request, format: str = "", token: str = ""):
-    if token not in app.login_token_token:
+    if token not in app.login_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=str(token) + "+" + str(app.login_token_token),
+            detail=str(token) + "+" + str(app.login_token),
             headers={"WWW-Authenticate": "Basic"},
         )
     response.status_code = status.HTTP_200_OK
@@ -176,27 +175,27 @@ def welcome_token(response: Response, request: Request, format: str = "", token:
 
 @app.delete("/logout_session")
 def logout_session(response: Response, request: Request, format: str = "", session_token: Optional[str] = Cookie(None)):
-    if session_token not in app.login_session_token:
+    if session_token not in app.login_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="session",
             headers={"WWW-Authenticate": "Basic"},
         )
     response.status_code = status.HTTP_303_SEE_OTHER
-    app.login_session_token.remove(session_token)
+    app.login_token.remove(session_token)
     return RedirectResponse("/logged_out?format=" + str(format), status_code=303)
 
 
 @app.delete("/logout_token")
 def logout_token(response: Response, request: Request, format: str = "", token: str = ""):
-    if token not in app.login_token_token:
+    if token not in app.login_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="token",
             headers={"WWW-Authenticate": "Basic"},
         )
     response.status_code = status.HTTP_303_SEE_OTHER
-    app.login_token_token.remove(token)
+    app.login_token.remove(token)
     return RedirectResponse("/logged_out?format=" + str(format), status_code=303)
 
 
