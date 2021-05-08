@@ -328,7 +328,7 @@ async def categoriesChange(json: Name, id: int, response: Response):
     return {"id": id, "name": name}
 
 @app.delete("/categories/{id}")
-async def categoriesChange(id: int, response: Response):
+async def categoriesDelete(id: int, response: Response):
     cursor = app.db_connection.cursor()
     category = cursor.execute(f"SELECT CategoryID FROM Categories WHERE CategoryID = {id}").fetchall()
     if len(category) == 0:
