@@ -239,3 +239,13 @@ async def categories():
     return {
         "categories": categories,
     }
+
+@app.get("/products/{id}")
+async def products(response: Response, request: Request, id: int = None):
+    cursor = app.db_connection.cursor()
+    product = cursor.execute("SELECT ProductName FROM Products WHERE ProductID =" + str(id)).fetchall()
+    if len(product) == 0:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return
+    print(product)
+    return {"id": id, "name": product[0][0]}
