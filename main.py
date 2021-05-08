@@ -304,26 +304,26 @@ async def orders(response: Response, request: Request, id: int = None):
         "orders": orders,
     }
 
+class Name(BaseModel):
+    name: str
 
 @app.post("/categories/")
-async def categoriesAdd(json, response: Response, request: Request):
+async def categoriesAdd(json: Name, response: Response, request: Request):
     response.status_code = status.HTTP_201_CREATED
-    print(json)
-    name = json["name"]
+    name = json.name
     cursor = app.db_connection.cursor()
     cursor.execute(f'INSERT INTO Categories (CategoryName) VALUES ("{name}")')
     id = cursor.execute(f'SELECT CategoryId FROM Categories WHERE CategoryName = {name}')
     return {"id": id, "name": name}
 
 @app.put("/categories/{id}")
-async def categoriesChange(json, id: int, response: Response):
+async def categoriesChange(json: Name, id: int, response: Response):
     cursor = app.db_connection.cursor()
     category = cursor.execute(f"SELECT CategoryID FROM Categories WHERE CategoryID = {id}").fetchall()
     if len(category) == 0:
         response.status_code = status.HTTP_404_NOT_FOUND
         return
-    print(json)
-    name = json["name"]
+    name = json.name
     cursor.execute(f"UPDATE Categories SET CategoryName = '{name}' WHERE CategoryID = {id}")
     return {"id": id, "name": name}
 
