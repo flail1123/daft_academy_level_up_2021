@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from datetime import *
 from typing import Optional
 from fastapi.templating import Jinja2Templates
-import secrets
+import sqlite3
 from fastapi.responses import PlainTextResponse
 from fastapi.responses import RedirectResponse
 
@@ -17,6 +17,17 @@ app.patients = []
 app.secret_key = "asdjfkljbaodifjhioudfyahhhghyhhhhihrphaoudfshgryerawdioghperadghper"
 app.login_token = []
 security = HTTPBasic()
+
+
+@app.on_event("startup")
+async def startup():
+    app.db_connection = sqlite3.connect("northwind.db")
+    app.db_connection.text_factory = lambda b: b.decode(errors="ignore")  # northwind specific
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    app.db_connection.close()
 
 
 @app.get("/")
@@ -202,3 +213,24 @@ def logout_token(response: Response, request: Request, format: str = "", token: 
 def logged_out(response: Response, request: Request, format: str = ""):
     response.status_code = status.HTTP_200_OK
     return return_message(format, request, "Logged out!")
+
+
+@app.get("/customers")
+async def customers():
+    cursor = app.db_connection.cursor()
+    customers = cursor.execute("SELECT ContactName FROM Customers").fetchall()
+    for i, item in enumerate(customers):
+        customers[i] = {"id": i, "name": item[0]}
+    return {
+        "customers": customers,
+    }
+
+@app.get("/categories")
+async def categories():
+    cursor = app.db_connection.cursor()
+    categories = cursor.execute("SELECT CategoryID as id, CategoryName as name FROM Categories").fetchall()
+    for i, item in enumerate(categories):
+        categories[i] = {"id": int(item[0]), "name": item[1]}
+    return {
+        "categories": categories,
+    }
