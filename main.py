@@ -218,9 +218,10 @@ def logged_out(response: Response, request: Request, format: str = ""):
 @app.get("/customers")
 async def customers():
     cursor = app.db_connection.cursor()
-    customers = cursor.execute("SELECT ContactName FROM Customers").fetchall()
+    customers = cursor.execute("SELECT CustomerID, CompanyName, Address, PostalCode, City, Country FROM Customers").fetchall()
+    customers.sort()
     for i, item in enumerate(customers):
-        customers[i] = {"id": i, "name": item[0]}
+        customers[i] = {"id": item[0], "name": item[1], "full_address": item[2] + " " + item[3] + " " + item[4] + " " + item[5]}
     return {
         "customers": customers,
     }
