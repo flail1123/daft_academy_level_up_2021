@@ -218,8 +218,8 @@ def logged_out(response: Response, request: Request, format: str = ""):
 @app.get("/customers")
 async def customers():
     cursor = app.db_connection.cursor()
-    customers = cursor.execute("SELECT CustomerID, CompanyName, Address, PostalCode, City, Country FROM Customers").fetchall()
-    customers.sort()
+    customers = cursor.execute("SELECT CustomerID, CompanyName, Address, PostalCode, City, Country FROM Customers ORDER BY CustomerID").fetchall()
+    customers.sort(key=lambda row: row[0].lower())
     for i, item in enumerate(customers):
         item = list(item)
         for j in range(2, 6):
