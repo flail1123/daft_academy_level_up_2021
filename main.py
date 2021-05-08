@@ -275,3 +275,17 @@ async def employees(response: Response, request: Request, limit: int = None, off
     return {
         "employees": employees,
     }
+
+@app.get("/products_extended/")
+async def products_extended(response: Response, request: Request):
+    cursor = app.db_connection.cursor()
+    products_extended = cursor.execute("SELECT ProductID, ProductName, CategoryName, CompanyName FROM Products, Categories, Suppliers WHERE Products.SupplierID = Suppliers.SupplierID and Products.CategoryID = Categories.CategoryID ORDER BY ProductID").fetchall()
+
+    for i, item in enumerate(products_extended):
+        products_extended[i] = {"id": int(item[0]), "name": item[1], "category": item[2], "supplier": item[3]}
+    return {
+        "products_extended": products_extended,
+    }
+
+
+
