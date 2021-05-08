@@ -247,7 +247,6 @@ async def products(response: Response, request: Request, id: int = None):
     if len(product) == 0:
         response.status_code = status.HTTP_404_NOT_FOUND
         return
-    print(product)
     return {"id": id, "name": product[0][0]}
 
 @app.get("/employees/")
@@ -288,4 +287,19 @@ async def products_extended(response: Response, request: Request):
     }
 
 
+@app.get("/products/{id}/orders")
+async def orders(response: Response, request: Request, id: int = None):
+    cursor = app.db_connection.cursor()
+    product = cursor.execute("SELECT ProductName FROM Products WHERE ProductID =" + str(id)).fetchall()
+    if len(product) == 0:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return
 
+    orders = cursor.execute(f"SELECT Orders.OrderId, CompanyName, Quantity, UnitPrice, Discount FROM Orders, Customers, [Order Details], Employees WHERE Customers.CustomerID = Orders.CustomerID and Orders.EmployeeID = Employees.EmployeeID and [Order Details].OrderID = Orders.OrderID and [Order Details].ProductID = {id} ORDER BY Orders.OrderId").fetchall()
+
+    for i, item in enumerate(orders):
+        total_price = round((float(item[3]) * int(item[2])) - (float(item[4]) * (float(item[3]) * int(item[2]))), 2)
+        orders[i] = {"id": int(item[0]), "customer": item[1], "quantity": int(item[2]), "total_price": total_price}
+    return {
+        "orders": orders,
+    }
