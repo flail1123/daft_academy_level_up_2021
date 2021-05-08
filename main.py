@@ -221,9 +221,10 @@ async def customers():
     customers = cursor.execute("SELECT CustomerID, CompanyName, Address, PostalCode, City, Country FROM Customers").fetchall()
     customers.sort()
     for i, item in enumerate(customers):
-        for i in range(2, 6):
-            if item[i] is None:
-                item[i] = ""
+        item = list(item)
+        for j in range(2, 6):
+            if item[j] is None:
+                item[j] = ""
         customers[i] = {"id": item[0], "name": item[1], "full_address": str(item[2]) + " " + str(item[3]) + " " + str(item[4]) + " " + str(item[5])}
     return {
         "customers": customers,
