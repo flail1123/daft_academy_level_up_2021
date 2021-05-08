@@ -221,7 +221,7 @@ async def customers():
     customers = cursor.execute("SELECT CustomerID, CompanyName, Address, PostalCode, City, Country FROM Customers").fetchall()
     customers.sort()
     for i, item in enumerate(customers):
-        customers[i] = {"id": item[0], "name": item[1], "full_address": item[2] + " " + item[3] + " " + item[4] + " " + item[5]}
+        customers[i] = {"id": item[0], "name": item[1], "full_address": str(item[2]) + " " + str(item[3]) + " " + str(item[4]) + " " + str(item[5])}
     return {
         "customers": customers,
     }
