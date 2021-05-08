@@ -250,19 +250,26 @@ async def products(response: Response, request: Request, id: int = None):
     print(product)
     return {"id": id, "name": product[0][0]}
 
-@app.get("/employees/{limit}/{offset}/{order}")
-async def employees(response: Response, request: Request, limit: int = None, offset: int = None, order: str = ""):
+@app.get("/employees/")
+async def employees(response: Response, request: Request, limit: int = None, offset: int = None, order: str = "id"):
     if order == "first_name":
         order = "FirstName"
     elif order == "last_name":
         order = "LastName"
     elif order == "city":
         order = "city"
+    elif order == "id":
+        order = "EmployeeID"
     else:
         response.status_code = status.HTTP_400_BAD_REQUEST
         return
     cursor = app.db_connection.cursor()
-    employees = cursor.execute(f"SELECT EmployeeID, LastName, FirstName, City FROM Employees ORDER BY {order} LIMIT {limit} OFFSET {offset}").fetchall()
+    query = f"SELECT EmployeeID, LastName, FirstName, City FROM Employees ORDER BY {order}"
+    if limit is not None:
+        query += f" LIMIT {limit}"
+    if offset is not None:
+        query += f" OFFSET {offset}"
+    employees = cursor.execute(query).fetchall()
     for i, item in enumerate(employees):
         employees[i] = {"id": int(item[0]), "last_name": item[1], "first_name": item[2], "city": item[3]}
     return {
