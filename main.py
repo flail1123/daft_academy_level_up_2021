@@ -325,6 +325,7 @@ async def categoriesChange(json: Name, id: int, response: Response):
         return
     name = json.name
     cursor.execute(f"UPDATE Categories SET CategoryName = '{name}' WHERE CategoryID = {id}")
+    response.status_code = status.HTTP_200_OK
     return {"id": id, "name": name}
 
 @app.delete("/categories/{id}")
@@ -335,4 +336,5 @@ async def categoriesDelete(id: int, response: Response):
         response.status_code = status.HTTP_404_NOT_FOUND
         return
     cursor.execute(f"DELETE FROM Categories WHERE CategoryID = {id}")
-    return {"deleted": id}
+    response.status_code = status.HTTP_200_OK
+    return {"deleted": 1}
