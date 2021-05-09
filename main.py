@@ -307,7 +307,7 @@ async def orders(response: Response, request: Request, id: int = None):
 class Name(BaseModel):
     name: str
 
-@app.get("/categories/")
+@app.post("/categories/")
 async def categoriesAdd(json: Name, response: Response, request: Request):
     response.status_code = status.HTTP_201_CREATED
     name = json.name
