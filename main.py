@@ -312,7 +312,7 @@ async def categoriesAdd(json: Name, response: Response, request: Request):
     response.status_code = status.HTTP_201_CREATED
     name = json.name
     cursor = app.db_connection.cursor()
-    cursor.execute(f'INSERT INTO Categories (CategoryID, CategoryName, Description, Picture) VALUES ((SELECT COUNT(*) FROM Categories) + 1, "{name}"), "Description", 1')
+    cursor.execute(f'INSERT INTO Categories (CategoryID, CategoryName, Description, Picture) VALUES ((SELECT COUNT(*) FROM Categories) + 1, "{name}", "Description", 1)')
     id = cursor.execute(f'SELECT CategoryId FROM Categories WHERE CategoryName = {name}')
     return {"id": id, "name": name}
 
