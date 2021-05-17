@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import PositiveInt
 from sqlalchemy.orm import Session
-
-from . import crud, schemas
+import crud
+import schemas
 from .database import get_db
 from .views import router as northwind_api_router
 
