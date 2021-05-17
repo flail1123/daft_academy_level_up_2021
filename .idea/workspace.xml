@@ -19,10 +19,7 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="374d82b5-0837-4cfb-9edc-ac38a992ebd0" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/crud.py" beforeDir="false" afterPath="$PROJECT_DIR$/crud.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-    </list>
+    <list default="true" id="374d82b5-0837-4cfb-9edc-ac38a992ebd0" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -92,7 +89,7 @@
       <workItem from="1621092235306" duration="675000" />
       <workItem from="1621093470555" duration="605000" />
       <workItem from="1621158305935" duration="136000" />
-      <workItem from="1621272522612" duration="301000" />
+      <workItem from="1621272522612" duration="626000" />
     </task>
     <servers />
   </component>
